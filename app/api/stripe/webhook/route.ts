@@ -1,11 +1,11 @@
 import Stripe from "stripe";
-import { getStripe } from "../../../../lib/stripe";
+import { getStripe, isLiveStripeMode } from "../../../../lib/stripe";
 import { recordWebhook, upsertEntitlement } from "../../../../lib/entitlements";
 import { recordSystemEvent } from "../../../../lib/analytics";
 
 export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const secret = isLiveStripeMode() ? process.env.STRIPE_LIVE_WEBHOOK_SECRET : process.env.STRIPE_WEBHOOK_SECRET;
   if (!signature || !secret) return new Response("Webhook not configured", { status: 400 });
   try {
     const event = await getStripe().webhooks.constructEventAsync(await request.text(), signature, secret);
