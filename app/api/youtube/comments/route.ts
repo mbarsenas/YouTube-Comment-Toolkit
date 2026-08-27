@@ -1,4 +1,5 @@
 import { hasPaidAccess } from "../../../../lib/stripe";
+import { recordProductEvent } from "../../../../lib/analytics";
 
 function videoId(input: string) {
   try {
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
       }
       pageToken = json.nextPageToken ?? "";
     } while (pageToken && comments.length < limit);
+    await recordProductEvent("comment_import", { metadata: { paid, comment_count: comments.length, truncated: Boolean(pageToken) } }).catch(() => {});
     return Response.json({ paid, limit, truncated: Boolean(pageToken), video: { id, title: video.snippet.title, channel: video.snippet.channelTitle, thumbnail: video.snippet.thumbnails?.medium?.url, totalComments: Number(video.statistics.commentCount ?? comments.length) }, comments });
   } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Comments could not be loaded." }, { status: 500 }); }
 }
