@@ -1,21 +1,24 @@
 import { getStripe } from "../../../lib/stripe";
+import { recordProductEvent } from "../../../lib/analytics";
 
 export async function POST(request: Request) {
   try {
     const origin = new URL(request.url).origin;
+    await recordProductEvent("checkout_attempt").catch(() => {});
     const suffix = crypto.randomUUID().replaceAll("-", "").slice(0, 8);
+    const priceId = process.env.STRIPE_PRICE_ID;
     const session = await getStripe().checkout.sessions.create({
       mode: "payment",
-      integration_identifier: `commentkit_${suffix}`,
+      integration_identifier: `commentharbor_${suffix}`,
       line_items: [{
         quantity: 1,
-        price_data: {
+        ...(priceId ? { price: priceId } : { price_data: {
           currency: "usd",
           unit_amount: 1900,
-          product_data: { name: "CommentKit Lifetime Early Access", description: "Unlimited comment imports, exports, and giveaway tools." },
-        },
+          product_data: { name: "CommentHarbor Lifetime Access", description: "Advanced public comment imports, CSV exports, and giveaway tools." },
+        }}),
       }],
-      metadata: { product: "commentkit_lifetime" },
+      metadata: { product: "commentharbor_lifetime" },
       customer_creation: "always",
       allow_promotion_codes: true,
       success_url: `${origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
