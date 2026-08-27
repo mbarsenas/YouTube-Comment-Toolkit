@@ -7,6 +7,10 @@ export function getStripe() {
   return new Stripe(key, { apiVersion: "2026-07-29.dahlia" });
 }
 
+export function isLiveStripeMode() {
+  return process.env.STRIPE_RESTRICTED_KEY?.startsWith("rk_live_") ?? false;
+}
+
 export function getPaidSessionId(request: Request) {
   const cookies = request.headers.get("cookie") ?? "";
   return cookies.split(";").map((part) => part.trim()).find((part) => part.startsWith("commentkit_access="))?.slice("commentkit_access=".length) ?? null;
