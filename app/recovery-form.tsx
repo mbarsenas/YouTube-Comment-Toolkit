@@ -20,6 +20,6 @@ export function RecoveryForm({ paid }: { paid: boolean }) {
     } catch { setMessage("Recovery could not be started."); }
     finally { setSending(false); }
   }
-  if (paid && !message) return null;
+  if (paid) return null;
   return <div className="recovery-card"><div><span className="label">PURCHASE RECOVERY</span><h3>Already purchased?</h3><p>Enter the email used at checkout. We’ll send a secure, one-time link that restores Pro access on this browser.</p></div><form onSubmit={requestRecovery}><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" aria-label="Purchase email"/><button disabled={sending}>{sending ? "Sending…" : "Email recovery link"}</button>{message && <small>{message}</small>}</form></div>;
 }
