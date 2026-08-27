@@ -43,7 +43,7 @@ export async function hasPaidAccess(request: Request) {
   if (!sessionId) return false;
   try {
     const session = await getStripe().checkout.sessions.retrieve(sessionId);
-    const paid = session.payment_status === "paid" && session.metadata?.product === "commentkit_lifetime";
+    const paid = session.payment_status === "paid" && ["commentharbor_lifetime", "commentkit_lifetime"].includes(session.metadata?.product ?? "");
     if (paid && session.customer_details?.email) await upsertEntitlement({ email: session.customer_details.email, customerId: typeof session.customer === "string" ? session.customer : null, sessionId: session.id });
     return paid;
   } catch { return false; }
