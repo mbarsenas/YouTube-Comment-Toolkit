@@ -1,4 +1,4 @@
-import { getStripe } from "../../../lib/stripe";
+import { getStripe, isLiveStripeMode } from "../../../lib/stripe";
 import { recordProductEvent } from "../../../lib/analytics";
 
 export async function POST(request: Request) {
@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const origin = new URL(request.url).origin;
     await recordProductEvent("checkout_attempt").catch(() => {});
     const suffix = crypto.randomUUID().replaceAll("-", "").slice(0, 8);
-    const priceId = process.env.STRIPE_PRICE_ID;
+    const priceId = isLiveStripeMode() ? process.env.STRIPE_LIVE_PRICE_ID : process.env.STRIPE_PRICE_ID;
     const session = await getStripe().checkout.sessions.create({
       mode: "payment",
       integration_identifier: `commentharbor_${suffix}`,
