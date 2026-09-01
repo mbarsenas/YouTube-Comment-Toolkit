@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     title: "CommentHarbor — YouTube Comment Tools for Creators",
     description: "Search, filter, export, and pick fair giveaway winners from public YouTube comments.",
   },
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml", sizes: "48x48" }],
+  },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body>{children}</body></html>; }
